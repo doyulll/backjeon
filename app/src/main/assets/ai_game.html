@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>AI 장기</title>
+    <style>
+        body { margin: 0; background: #f4f4f4; text-align: center; font-family: sans-serif; }
+        canvas { position: absolute; z-index: 1; pointer-events: none; }
+        #stage { position: absolute; z-index: 2; }
+.container {
+  display: flex;
+  justify-content: center;  /* 가로 중앙 정렬 */
+  margin-top: 85px;
+}
+.team_green, .team_red, .item_normal, .item_small {
+  width: 60px;
+  height: 60px;
+  font-size: 30px;
+  font-size: 30px
+  text-align: center;
+  line-height: 60px;
+}
+.position {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background-color: rgba(255, 0, 0, 0.3); /* 반투명 빨강 */
+  border: 2px dashed red;
+  z-index: 999;
+}
+
+
+.board-wrapper {
+  transform: scale(0.47);
+  transform-origin: top left;
+  width: 720px;
+  height: 800px;
+  position: relative;
+  margin-left: 22px; /* or 10px: 필요시 조절 */
+}
+
+ #janggiBoard {
+    transform: translateX(-175px); /* 왼쪽으로 30px 이동 (원하는 만큼 조정 가능) */
+  }
+        select { margin-top: 10px; padding: 6px; }
+        .eatitems { width: 33%; height: 100px; background: #ddd; display: inline-block; margin: 10px; }
+    </style>
+
+</head>
+<body>
+<h1 style="color: red;">AI 대국</h1>
+<p>Play against the AI opponent!</p>
+
+<select id="setup">
+    <option value="마상마상">마상마상</option>
+    <option value="상마상마">상마상마</option>
+    <option value="마상상마">마상상마</option>
+    <option value="상마마상">상마마상</option>
+</select>
+
+<div class="container">
+    <div class="board-wrapper">
+        <canvas id="janggiBoard" width="720" height="800"></canvas>
+        <div id="stage" style="width:720px;height:800px;"></div>
+    </div>
+</div>
+
+<div>
+    <div id="han_eatitems" class="eatitems"></div>
+    <div id="cho_eatitems" class="eatitems"></div>
+</div>
+
+<script src="HMotion.js"></script>
+<script src="janggi.js"></script>
+<script>
+    function drawJanggiBoard(canvasId, cellWidth, cellHeight) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      for (let x = 0; x < 9; x++) {
+        ctx.beginPath();
+        ctx.moveTo(x * cellWidth, 0);
+        ctx.lineTo(x * cellWidth, 9 * cellHeight);
+        ctx.stroke();
+      }
+      for (let y = 0; y < 10; y++) {
+        ctx.beginPath();
+        ctx.moveTo(0, y * cellHeight);
+        ctx.lineTo(8 * cellWidth, y * cellHeight);
+        ctx.stroke();
+      }
+      ctx.beginPath();
+      ctx.moveTo(3 * cellWidth, 0);
+      ctx.lineTo(5 * cellWidth, 2 * cellHeight);
+      ctx.moveTo(5 * cellWidth, 0);
+      ctx.lineTo(3 * cellWidth, 2 * cellHeight);
+      ctx.moveTo(3 * cellWidth, 7 * cellHeight);
+      ctx.lineTo(5 * cellWidth, 9 * cellHeight);
+      ctx.moveTo(5 * cellWidth, 7 * cellHeight);
+      ctx.lineTo(3 * cellWidth, 9 * cellHeight);
+      ctx.stroke();
+    }
+
+    drawJanggiBoard("janggiBoard", 720 / 8, 800 / 9);
+    let interval = setInterval(() => {
+      if (typeof JanggiStage !== 'undefined') {
+        const game = new JanggiStage("janggiGame", "stage", "han_eatitems", "cho_eatitems");
+        game.init("마상마상");
+        window.janggiGame = game;
+        clearInterval(interval);
+      }
+    }, 100);
+
+    document.getElementById("setup").onchange = (e) => {
+      const type = e.target.value;
+      window.janggiGame?.init(type);
+    };
+</script>
+</body>
+</html>
