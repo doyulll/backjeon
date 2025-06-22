@@ -4,12 +4,12 @@ var ZW= {};
 
 var Janggi = {
 	Gung	: {No:1,Score:20000},
-	Cha	: {No:2,Score:1000},
-	Sang	: {No:3,Score:450},
-	Ma	: {No:4,Score:700},
-	Sa	: {No:5,Score:600},
-	Po	: {No:6,Score:850},
-	Jole	: {No:7,Score:400},
+	Cha	: {No:2,Score:1300},
+	Sang	: {No:3,Score:300},
+	Ma	: {No:4,Score:550},
+	Sa	: {No:5,Score:350},
+	Po	: {No:6,Score:700},
+	Jole	: {No:7,Score:200},
 
 	User	: 1,
 	Computer: 2
@@ -57,6 +57,266 @@ function JanggiStage(objName, stage_id, han_eatitems, cho_eatitems) {
   this.motion = new HMotion(this.objName + '.motion');
   this.han_eatitems_area = document.getElementById(han_eatitems);
   this.cho_eatitems_area = document.getElementById(cho_eatitems);
+	this.checkJanggun = function() {
+		var now_stage = this.getStageStatus();
+
+		var other_team = (this.tern == Janggi.User) ? Janggi.Computer : Janggi.User;
+		var other_gung_pos = null;
+
+		var s_row = 0;
+		if(other_team == Janggi.User) {
+			s_row += 7;
+		}
+		var max_row = s_row+2;
+
+		for(var col = 3 ; col <= 5 ; col++) {
+			for(var row = s_row ; row <= max_row ; row++) {
+				if(now_stage[col][row] != null && now_stage[col][row].junit_obj.kind == Janggi.Gung) {
+					other_gung_pos = new Point(col, row);
+					col = 5;
+					break;
+				}
+			}
+		}
+
+		if(other_gung_pos == null) {
+			return;
+		}
+
+		for(var col = 0 ; col < 9 ; col++) {
+			for(var row = 0 ; row < 10 ; row++) {
+				if(now_stage[col][row] == null || now_stage[col][row].junit_obj.team != this.tern) {
+					continue;
+				}
+				var junit_obj = now_stage[col][row].junit_obj;
+				var poses = junit_obj.getMoveablePos(now_stage);
+				for(var i = 0 ; i < poses.length ; i++) {
+					if(now_stage[poses[i].x][poses[i].y] != null && now_stage[poses[i].x][poses[i].y].junit_obj.kind == Janggi.Gung) {
+						alert('장군!');
+						col =  9;
+						row = 10;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	this.doGameOver = function(is_comwin) {
+		var msg = (is_comwin) ? '패배' : '승리' ;
+		alert(msg);
+		this.is_final = true;
+	}
+	this.doMinimax = function(stage, depth, cut_score) {
+		if(depth == this.m_depth) {
+			this.com_tern++;
+			mytest(this.com_tern);
+		}
+		if(depth == this.m_depth && this.com_tern < 6) {
+			//일반 패턴
+			var direct_pattern = [];
+			if(
+					stage[0][3] != null && stage[0][3].junit_obj.team == Janggi.Computer && stage[0][3].junit_obj.kind == Janggi.Jole
+					&& stage[0][6] != null && stage[0][6].junit_obj.team == Janggi.User && stage[0][6].junit_obj.kind == Janggi.Jole
+			  ) { // 좌 차문열기
+				direct_pattern.push([0, 3, 1, 3]);
+			}
+			if(
+					stage[8][3] != null && stage[8][3].junit_obj.team == Janggi.Computer && stage[8][3].junit_obj.kind == Janggi.Jole &&
+					stage[8][6] != null && stage[8][6].junit_obj.team == Janggi.User && stage[8][6].junit_obj.kind == Janggi.Jole
+			  ) { // 우 차문열기
+				direct_pattern.push([8, 3, 7, 3]);
+			}
+
+			// 차문 열기 있으면 적용 !
+			if(stage[0][3] != null && stage[8][3] != null && direct_pattern.length > 0) {
+				var pos = direct_pattern[parseInt(Math.random()*direct_pattern.length)];
+				this.ChangeUnit(pos[0], pos[1], pos[2], pos[3]);
+				//alert('차문열기');
+				return;
+			}
+			var direct_pattern = [];
+			///*
+
+			//포 궁앞에 놓도록 말올리기, 포 놓기
+			if(
+				stage[4][2] == null && stage[4][3] != null && stage[4][3].junit_obj.team == Janggi.Computer
+				&& ( // 정해진 수대로 진행하면 안되는 조건들
+					(stage[0][3] != null && stage[0][3].junit_obj.team != Janggi.Computer)
+					|| (stage[8][3] != null && stage[8][3].junit_obj.team != Janggi.Computer)
+					|| (stage[0][3] == null && stage[0][6] == null)
+					|| (stage[8][3] == null && stage[8][6] == null)
+					|| (stage[3][3] != null && stage[3][3].junit_obj.kind == Janggi.Ma)
+					|| (stage[5][3] != null && stage[5][3].junit_obj.kind == Janggi.Ma)
+					|| (stage[0][7] != null && stage[0][7].junit_obj.kind == Janggi.Po)
+					|| (stage[8][7] != null && stage[8][7].junit_obj.kind == Janggi.Po)
+					|| (stage[4][7] != null && stage[4][7].junit_obj.kind == Janggi.Po && stage[4][6] == null)
+					|| stage[0][9] == null
+					|| stage[8][9] == null
+				) == false
+			) {
+				for(var i = 0 ; i <= 8 ; i++) {
+					if(stage[i][0] != null && stage[i][0].junit_obj.kind == Janggi.Ma) {
+						direct_pattern.push([i, 0, ((i < 4) ? i+1 : i-1), 2]);
+					}
+				}
+
+				if(direct_pattern.length == 2) {
+					var pos = direct_pattern[parseInt(Math.random()*100%direct_pattern.length)];
+					this.ChangeUnit(pos[0], pos[1], pos[2], pos[3]);
+					//alert('마올리기');
+					return;
+				}
+
+				if(direct_pattern.length == 1) {
+					var x = (direct_pattern[0][0] > 4) ? 1 : 7;
+					this.ChangeUnit(x, 2, 4, 2);
+					//alert('포놓기');
+					return;
+				}
+
+			}
+			//*/
+		}
+
+
+
+
+
+		depth--;
+		var max = (this.m_depth-1)%2; // 컴이 둘 차례. max 값 보고.
+		var min = (max+1)%2; // 유저가 둘 차례. min값 보고.
+
+		var report_type = depth % 2;
+
+		var tern = (report_type == max) ? Janggi.Computer : Janggi.User;
+
+
+		var res_score = null;
+		var res_state = null;
+
+		var node_count = 0;
+
+		for(var col = 0 ; col < 9 ; col++) {
+			for(var row = 0 ; row < 10 ; row++) {
+
+
+				if(stage[col][row] != null && stage[col][row].junit_obj.team == tern) {
+					var poses = stage[col][row].junit_obj.getMoveablePos(stage);
+
+					node_count += poses.length;
+
+
+
+					for(var i = 0 ; i < poses.length ; i++) {
+
+						var state = [col, row, poses[i].x, poses[i].y];
+						if(
+							stage[poses[i].x][poses[i].y] != null
+							&& stage[poses[i].x][poses[i].y].junit_obj.team != stage[col][row].junit_obj.team
+							&& stage[poses[i].x][poses[i].y].junit_obj.kind == Janggi.Gung
+						) { // 왕 먹었다. 더 계산할거 없이 리턴
+							res_score = -100000;
+							if(report_type == max) res_score = 100000;
+
+							res_state = state;
+							col = 9;
+							row = 10;
+							break;
+						}
+
+
+
+
+						var param_stage = this.getChangeStageStatus(stage, col, row, poses[i].x, poses[i].y);
+						var item = param_stage[poses[i].x][poses[i].y];
+
+						var state = [col, row, poses[i].x, poses[i].y];
+						if(depth == this.m_depth-1) {
+							mytest(item.junit_obj.text+'Depth : '+depth+' : '+state.join('-'))
+							mytest('================================');
+						}
+
+
+
+						if(depth == 0) {
+							var score = get_stage_score(param_stage, Janggi.Computer) - get_stage_score(param_stage, Janggi.User);
+
+							if(res_score == null || (report_type == min && res_score > score) || (report_type == max && res_score < score)) {
+								res_score = score;
+
+								if(cut_score != null && (report_type == min && res_score <= cut_score) || (report_type == max && res_score >= cut_score)) {
+									col = 9;
+									row = 10;
+									break;
+								}
+							}
+							continue;
+						}
+
+
+						var score = this.doMinimax(param_stage, depth, res_score);
+
+
+						if(res_score == null || (report_type == max && score > res_score) || (report_type == min && score < res_score)) {
+							//if(score == res_score && Math.random()*30 < 16) {
+							//	continue;
+							//}
+							res_score = score;
+							res_state = state;
+							if(cut_score != null && ((report_type == max && res_score > cut_score) || (report_type == min && res_score < cut_score))) {
+								mytest('cut-dep:'+depth+', rtype : '+report_type+', cut : '+cut_score+', sco : '+res_score);
+								col = 9;
+								row = 10;
+								break;
+							}
+						}
+
+					}
+				}
+			}
+		}
+
+		if(depth < this.m_depth-1) {
+			return res_score;
+		}
+
+		mytest(res_state[0]+', '+res_state[1]+', '+res_state[2]+', '+res_state[3]);
+		this.ChangeUnit (res_state[0], res_state[1], res_state[2], res_state[3]);
+
+	}
+
+
+	this.getStageStatus = function() { // 현재 장기판에 유효한 장기알만 배열로 리튼
+		var result = [];
+		for(var col = 0 ; col < 9 ; col++) {
+			result[col] = [];
+		}
+
+		for(var i = 0 ; i < this.units.length ; i++) {
+			if(this.units[i].is_valid == false)
+				continue;
+			result[ this.units[i].junit_obj.axis_x ][ this.units[i].junit_obj.axis_y ] = this.units[i];
+		}
+		return result;
+	}
+	this.getChangeStageStatus = function(stage, f_x, f_y, d_x, d_y) {
+		var result = [];
+		for(var col = 0 ; col < 9 ; col++) {
+			result[col] = [];
+		}
+
+		for(var col = 0 ; col < 9 ; col++) {
+			for(var row = 0 ; row < 10 ; row++) {
+				result[col][row] = stage[col][row];
+			}
+		}
+
+		result[d_x][d_y] = result[f_x][f_y];
+		result[f_x][f_y] = null;
+
+		return result;
+	}
 
   this.stage.appendChild(this.com_beforepos);
   this.stage.appendChild(this.com_nowpos);
@@ -113,8 +373,10 @@ JanggiStage.prototype.showPos = function (junit_obj) {
   for (let i = 0; i < poses.length; i++) {
     const div = document.createElement('div');
     div.className = 'position';
+
     div.style.left = (poses[i].x * this.x_term) + 'px';
-    div.style.top = (poses[i].y * this.y_term) + 'px';
+    div.style.top  = (poses[i].y * this.y_term) + 'px';
+
     set_opacity(div, 80);
    const stageInstance = this;
    div.onclick = function () {
@@ -302,10 +564,12 @@ JanggiStage.prototype.init = function (setupType) {
 		if(junit_obj.is_computer == true) {
 			this.showComBeforePos(from_x, from_y, to_x, to_y);
 			this.tern = Janggi.User;
+            console.log("사용자 턴");
 		} else {
+		    console.log("AI 턴 시작 준비");
 			this.tern = Janggi.Computer;
 			if(this.is_single == true) {
-/*
+
 				var com_items  = 0;
 				var user_items = 0;
 				for(var i = 0 ; i < this.units.length ; i++) {
@@ -332,271 +596,12 @@ JanggiStage.prototype.init = function (setupType) {
 				if(min == 2 && this.m_depth - this.default_depth != 6) {
 					this.m_depth += 2;
 				}
-*/
+
 				this.doMinimax(this.getStageStatus(), this.m_depth, null);
 			}
 		}
 	}
 
-	this.checkJanggun = function() {
-		var now_stage = this.getStageStatus();
-
-		var other_team = (this.tern == Janggi.User) ? Janggi.Computer : Janggi.User;
-		var other_gung_pos = null;
-
-		var s_row = 0;
-		if(other_team == Janggi.User) {
-			s_row += 7;
-		}
-		var max_row = s_row+2;
-
-		for(var col = 3 ; col <= 5 ; col++) {
-			for(var row = s_row ; row <= max_row ; row++) {
-				if(now_stage[col][row] != null && now_stage[col][row].junit_obj.kind == Janggi.Gung) {
-					other_gung_pos = new Point(col, row);
-					col = 5;
-					break;
-				}
-			}
-		}
-
-		if(other_gung_pos == null) {
-			return;
-		}
-
-		for(var col = 0 ; col < 9 ; col++) {
-			for(var row = 0 ; row < 10 ; row++) {
-				if(now_stage[col][row] == null || now_stage[col][row].junit_obj.team != this.tern) {
-					continue;
-				}
-				var junit_obj = now_stage[col][row].junit_obj;
-				var poses = junit_obj.getMoveablePos(now_stage);
-				for(var i = 0 ; i < poses.length ; i++) {
-					if(now_stage[poses[i].x][poses[i].y] != null && now_stage[poses[i].x][poses[i].y].junit_obj.kind == Janggi.Gung) {
-						alert('장군!');
-						col =  9;
-						row = 10;
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	this.doGameOver = function(is_comwin) {
-		var msg = (is_comwin) ? '패배' : '승리' ;
-		alert(msg);
-		this.is_final = true;
-	}
-	this.doMinimax = function(stage, depth, cut_score) {
-		if(depth == this.m_depth) {
-			this.com_tern++;
-			mytest(this.com_tern);
-		}
-		if(depth == this.m_depth && this.com_tern < 6) {
-			//일반 패턴
-			var direct_pattern = [];
-			if(
-					stage[0][3] != null && stage[0][3].junit_obj.team == Janggi.Computer && stage[0][3].junit_obj.kind == Janggi.Jole
-					&& stage[0][6] != null && stage[0][6].junit_obj.team == Janggi.User && stage[0][6].junit_obj.kind == Janggi.Jole
-			  ) { // 좌 차문열기
-				direct_pattern.push([0, 3, 1, 3]);
-			}
-			if(
-					stage[8][3] != null && stage[8][3].junit_obj.team == Janggi.Computer && stage[8][3].junit_obj.kind == Janggi.Jole &&
-					stage[8][6] != null && stage[8][6].junit_obj.team == Janggi.User && stage[8][6].junit_obj.kind == Janggi.Jole
-			  ) { // 우 차문열기
-				direct_pattern.push([8, 3, 7, 3]);
-			}
-
-			// 차문 열기 있으면 적용 !
-			if(stage[0][3] != null && stage[8][3] != null && direct_pattern.length > 0) {
-				var pos = direct_pattern[parseInt(Math.random()*direct_pattern.length)];
-				this.ChangeUnit(pos[0], pos[1], pos[2], pos[3]);
-				//alert('차문열기');
-				return;
-			}
-			var direct_pattern = [];
-			///*
-
-			//포 궁앞에 놓도록 말올리기, 포 놓기
-			if(
-				stage[4][2] == null && stage[4][3] != null && stage[4][3].junit_obj.team == Janggi.Computer
-				&& ( // 정해진 수대로 진행하면 안되는 조건들
-					(stage[0][3] != null && stage[0][3].junit_obj.team != Janggi.Computer)
-					|| (stage[8][3] != null && stage[8][3].junit_obj.team != Janggi.Computer)
-					|| (stage[0][3] == null && stage[0][6] == null)
-					|| (stage[8][3] == null && stage[8][6] == null)
-					|| (stage[3][3] != null && stage[3][3].junit_obj.kind == Janggi.Ma)
-					|| (stage[5][3] != null && stage[5][3].junit_obj.kind == Janggi.Ma)
-					|| (stage[0][7] != null && stage[0][7].junit_obj.kind == Janggi.Po)
-					|| (stage[8][7] != null && stage[8][7].junit_obj.kind == Janggi.Po)
-					|| (stage[4][7] != null && stage[4][7].junit_obj.kind == Janggi.Po && stage[4][6] == null)
-					|| stage[0][9] == null
-					|| stage[8][9] == null
-				) == false
-			) {
-				for(var i = 0 ; i <= 8 ; i++) {
-					if(stage[i][0] != null && stage[i][0].junit_obj.kind == Janggi.Ma) {
-						direct_pattern.push([i, 0, ((i < 4) ? i+1 : i-1), 2]);
-					}
-				}
-
-				if(direct_pattern.length == 2) {
-					var pos = direct_pattern[parseInt(Math.random()*100%direct_pattern.length)];
-					this.ChangeUnit(pos[0], pos[1], pos[2], pos[3]);
-					//alert('마올리기');
-					return;
-				}
-
-				if(direct_pattern.length == 1) {
-					var x = (direct_pattern[0][0] > 4) ? 1 : 7;
-					this.ChangeUnit(x, 2, 4, 2);
-					//alert('포놓기');
-					return;
-				}
-
-			}
-			//*/
-		}
-
-
-
-
-
-		depth--;
-		var max = (this.m_depth-1)%2; // 컴이 둘 차례. max 값 보고.
-		var min = (max+1)%2; // 유저가 둘 차례. min값 보고.
-		var report_type = depth % 2;
-
-		var tern = (report_type == max) ? Janggi.Computer : Janggi.User;
-
-
-		var res_score = null;
-		var res_state = null;
-
-		var node_count = 0;
-
-		for(var col = 0 ; col < 9 ; col++) {
-			for(var row = 0 ; row < 10 ; row++) {
-
-
-				if(stage[col][row] != null && stage[col][row].junit_obj.team == tern) {
-					var poses = stage[col][row].junit_obj.getMoveablePos(stage);
-
-					node_count += poses.length;
-
-
-
-					for(var i = 0 ; i < poses.length ; i++) {
-
-						var state = [col, row, poses[i].x, poses[i].y];
-						if(
-							stage[poses[i].x][poses[i].y] != null
-							&& stage[poses[i].x][poses[i].y].junit_obj.team != stage[col][row].junit_obj.team
-							&& stage[poses[i].x][poses[i].y].junit_obj.kind == Janggi.Gung
-						) { // 왕 먹었다. 더 계산할거 없이 리턴
-							res_score = -100000;
-							if(report_type == max) res_score = 100000;
-
-							res_state = state;
-							col = 9;
-							row = 10;
-							break;
-						}
-
-
-
-
-						var param_stage = this.getChangeStageStatus(stage, col, row, poses[i].x, poses[i].y);
-						var item = param_stage[poses[i].x][poses[i].y];
-
-						var state = [col, row, poses[i].x, poses[i].y];
-						if(depth == this.m_depth-1) {
-							mytest(item.junit_obj.text+'Depth : '+depth+' : '+state.join('-'))
-							mytest('================================');
-						}
-
-
-
-						if(depth == 0) {
-							var score = get_stage_score(param_stage, Janggi.Computer) - get_stage_score(param_stage, Janggi.User);
-
-							if(res_score == null || (report_type == min && res_score > score) || (report_type == max && res_score < score)) {
-								res_score = score;
-
-								if(cut_score != null && (report_type == min && res_score <= cut_score) || (report_type == max && res_score >= cut_score)) {
-									col = 9;
-									row = 10;
-									break;
-								}
-							}
-							continue;
-						}
-
-
-						var score = this.doMinimax(param_stage, depth, res_score);
-
-
-						if(res_score == null || (report_type == max && score > res_score) || (report_type == min && score < res_score)) {
-							//if(score == res_score && Math.random()*30 < 16) {
-							//	continue;
-							//}
-							res_score = score;
-							res_state = state;
-							if(cut_score != null && ((report_type == max && res_score > cut_score) || (report_type == min && res_score < cut_score))) {
-								mytest('cut-dep:'+depth+', rtype : '+report_type+', cut : '+cut_score+', sco : '+res_score);
-								col = 9;
-								row = 10;
-								break;
-							}
-						}
-
-					}
-				}
-			}
-		}
-
-		if(depth < this.m_depth-1) {
-			return res_score;
-		}
-
-		mytest(res_state[0]+', '+res_state[1]+', '+res_state[2]+', '+res_state[3]);
-		this.ChangeUnit (res_state[0], res_state[1], res_state[2], res_state[3]);
-
-	}
-
-
-	this.getStageStatus = function() { // 현재 장기판에 유효한 장기알만 배열로 리튼
-		var result = [];
-		for(var col = 0 ; col < 9 ; col++) {
-			result[col] = [];
-		}
-
-		for(var i = 0 ; i < this.units.length ; i++) {
-			if(this.units[i].is_valid == false)
-				continue;
-			result[ this.units[i].junit_obj.axis_x ][ this.units[i].junit_obj.axis_y ] = this.units[i];
-		}
-		return result;
-	}
-	this.getChangeStageStatus = function(stage, f_x, f_y, d_x, d_y) {
-		var result = [];
-		for(var col = 0 ; col < 9 ; col++) {
-			result[col] = [];
-		}
-
-		for(var col = 0 ; col < 9 ; col++) {
-			for(var row = 0 ; row < 10 ; row++) {
-				result[col][row] = stage[col][row];
-			}
-		}
-
-		result[d_x][d_y] = result[f_x][f_y];
-		result[f_x][f_y] = null;
-
-		return result;
-	}
 
 	//private
 	function addEvent(obj, type, fn)
@@ -730,6 +735,43 @@ JanggiStage.prototype.init = function (setupType) {
 // 장기알
 var JanggiUnit = function(x_term, y_term, axis_x, axis_y, janggi_kind) {
 
+  // 원형 배경
+  const circle = document.createElement("div");
+  circle.className = "unit-circle";
+  circle.style.backgroundColor = axis_y < 4 ? "red" : "green"; // 팀별 색상
+
+  // 말 텍스트용 div
+  const pieceDiv = document.createElement("div");
+  pieceDiv.className = this.obj_className;
+  pieceDiv.innerText = this.text;
+  pieceDiv.style.position = 'absolute';
+  pieceDiv.style.left = '-25px';
+  pieceDiv.style.top = '-30px';
+  pieceDiv.style.width = '60px';
+  pieceDiv.style.height = '60px';
+  pieceDiv.style.textAlign = 'center';
+  pieceDiv.style.lineHeight = '60px';
+  pieceDiv.style.fontWeight = 'bold';
+  pieceDiv.style.fontSize = '24px';
+  pieceDiv.style.zIndex = '1';
+
+  // wrapper (말 + 원)
+  const wrapper = document.createElement('div');
+  wrapper.id = 'janggi_' + axis_x + '_' + axis_y;
+  wrapper.style.position = 'absolute';
+  wrapper.style.left = (axis_x * x_term) + 'px';
+  wrapper.style.top  = (axis_y * y_term) + 'px';
+  wrapper.style.width = '60px';
+  wrapper.style.height = '60px';
+
+  // 순서대로 추가 (원 → 말)
+  wrapper.appendChild(circle);
+  wrapper.appendChild(pieceDiv);
+
+  // 최종 등록
+  this.obj = wrapper;
+
+
 
 	this.x_term = x_term;
 	this.y_term = y_term;
@@ -805,9 +847,11 @@ var JanggiUnit = function(x_term, y_term, axis_x, axis_y, janggi_kind) {
     this.obj.style.left = (this.px_x + dx) + 'px';
     this.obj.style.top  = (this.px_y + dy) + 'px';
 
-    this.stage.appendChild(this.obj)
+//    this.stage.appendChild(this.obj)
 
 	this.MoveMotion = function(to_x, to_y, motion, after_params) {
+	        this.obj.style.marginLeft = '-25px';
+            this.obj.style.marginTop = '-30px';
 		var mpx = this.px_x;
 		var mpy = this.px_y;
 
@@ -833,6 +877,7 @@ var JanggiUnit = function(x_term, y_term, axis_x, axis_y, janggi_kind) {
 		this.px_y = this.axis_y * this.y_term;
 		this.obj.style.left = this.px_x+'px';
 		this.obj.style.top  = this.px_y+'px';
+
 	}
 	this.getAddScore = function(stage) {
 		var result = 0;

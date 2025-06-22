@@ -5,46 +5,145 @@
 
     <title>AI 장기</title>
     <style>
-        body { margin: 0; background: #f4f4f4; text-align: center; font-family: sans-serif; }
-        canvas { position: absolute; z-index: 1; pointer-events: none; }
-        #stage { position: absolute; z-index: 2; }
-.container {
-  display: flex;
-  justify-content: center;  /* 가로 중앙 정렬 */
-  margin-top: 85px;
-}
-.team_green, .team_red, .item_normal, .item_small {
+        body {
+       margin: 0;
+       background: #f4f4f4;
+       text-align: center;
+       font-family: sans-serif;
+     }
+
+     canvas {
+       position: absolute;
+       z-index: 1;
+       pointer-events: none;
+     }
+
+     #stage {
+       position: absolute;
+       z-index: 2;
+     }
+
+     .container {
+       display: flex;
+       justify-content: center;
+       margin-top: 85px;
+     }
+
+     .board-wrapper {
+       transform: scale(0.47);
+       transform-origin: top left;
+       width: 720px;
+       height: 800px;
+       position: relative;
+
+       margin-left: 380px;
+       <!--       margin-left: 20px;-->
+     }
+
+     #janggiBoard {
+     transform: translateX(-352.5px);
+<!--       transform: translateX(-195px);-->
+     }
+
+
+
+/* 큰 말 공통 스타일 (왕 포함) */
+.team_green, .team_red, .item_normal {
   width: 60px;
   height: 60px;
-  font-size: 30px;
-  font-size: 30px
+  font-size: 60px;
   text-align: center;
   line-height: 60px;
-}
-.position {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  background-color: rgba(255, 0, 0, 0.3); /* 반투명 빨강 */
-  border: 2px dashed red;
-  z-index: 999;
-}
-
-
-.board-wrapper {
-  transform: scale(0.47);
-  transform-origin: top left;
-  width: 720px;
-  height: 800px;
+  border-radius: 50%;
   position: relative;
-  margin-left: 22px; /* or 10px: 필요시 조절 */
+  z-index: 1;
 }
 
- #janggiBoard {
-    transform: translateX(-175px); /* 왼쪽으로 30px 이동 (원하는 만큼 조정 가능) */
-  }
-        select { margin-top: 10px; padding: 6px; }
-        .eatitems { width: 33%; height: 100px; background: #ddd; display: inline-block; margin: 10px; }
+/* 작은 말 */
+.item_small {
+  font-size: 40px;
+  margin-left:5px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 1;
+}
+
+/* 큰 말 및 왕 전용 배경 원 */
+.team_green::before,
+.team_red::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px solid black;
+  z-index: 0;
+}
+
+.team_green::before {
+  background-color: rgba(0, 128, 0, 0.2); /* 초록 */
+}
+
+.team_red::before {
+  background-color: rgba(255, 0, 0, 0.2); /* 빨강 */
+}
+
+/* 작은 말 팀별 배경 원 */
+.team_green.item_small::before,
+.team_red.item_small::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid black;
+  z-index: 0;
+}
+
+.team_green.item_small::before {
+  background-color: rgba(0, 128, 0, 0.2);
+}
+
+.team_red.item_small::before {
+  background-color: rgba(255, 0, 0, 0.2);
+}
+
+
+
+
+
+     select {
+       margin-top: 10px;
+       padding: 6px;
+     }
+
+     .eatitems {
+       width: 33%;
+       height: 100px;
+       background: #ddd;
+       display: inline-block;
+       margin: 10px;
+     }
+
+     /* 선택된 위치 강조용 */
+     .position {
+       position: absolute;
+       width: 60px;
+       height: 60px;
+       background-color: rgba(255, 0, 0, 0.3);
+       border: 2px dashed red;
+       margin-left: -25px;
+       margin-top: -30px;
+       z-index: 999;
+     }
+
     </style>
 
 </head>
@@ -105,19 +204,47 @@
     }
 
     drawJanggiBoard("janggiBoard", 720 / 8, 800 / 9);
-    let interval = setInterval(() => {
-      if (typeof JanggiStage !== 'undefined') {
-        const game = new JanggiStage("janggiGame", "stage", "han_eatitems", "cho_eatitems");
-        game.init("마상마상");
-        window.janggiGame = game;
-        clearInterval(interval);
-      }
-    }, 100);
+   let interval = setInterval(() => {
+  if (typeof JanggiStage !== 'undefined') {
+    const game = new JanggiStage("janggiGame", "stage", "han_eatitems", "cho_eatitems");
+    game.init("마상마상");
+    window.janggiGame = game;
+    clearInterval(interval);
+
+    // 말 위에 원 그리기 (초: 파란색, 한: 빨간색)
+    setTimeout(() => {
+      drawCircleAroundPieces(game);
+    }, 300); // 말이 다 그려진 후 실행되도록 약간 지연
+  }
+}, 100);
 
     document.getElementById("setup").onchange = (e) => {
       const type = e.target.value;
       window.janggiGame?.init(type);
     };
+
+    function drawCircleAroundPieces(game) {
+  const canvas = document.getElementById("janggiBoard");
+  const ctx = canvas.getContext("2d");
+
+  // 예시: 모든 말에 대해 표시
+  for (let y = 0; y < 10; y++) {
+    for (let x = 0; x < 9; x++) {
+      const piece = game.stage[x][y];
+      if (!piece || !piece.junit_obj) continue;
+
+      const cellX = x * (720 / 8) + (720 / 8) / 2;
+      const cellY = y * (800 / 9) + (800 / 9) / 2;
+
+      ctx.beginPath();
+      ctx.arc(cellX, cellY, 25, 0, 2 * Math.PI);
+      ctx.strokeStyle = piece.junit_obj.team === 1 ? "blue" : "red"; // 초: 1, 한: 2
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    }
+  }
+}
+
 </script>
 </body>
 </html>

@@ -12,6 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Backjeon"
         tools:targetApi="31">
+
+        <!-- 메인 액티비티 -->
         <activity android:name="com.example.backjeon.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
@@ -21,8 +23,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- AI 게임 액티비티 -->
         <activity android:name="com.example.backjeon.AIGameActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!-- 커뮤니티 액티비티 추가 -->
+        <activity android:name="com.example.backjeon.PostActivity"
+            android:theme="@style/Theme.AppCompat.Light" />
+
+        <activity
+            android:name="com.example.backjeon.WritePostActivity"
+            android:theme="@style/Theme.AppCompat.Light.DialogWhenLarge" />
+
+        <activity android:name="com.example.backjeon.PostDetailActivity"
+            android:theme="@style/Theme.AppCompat.Light" />
 
     </application>
 

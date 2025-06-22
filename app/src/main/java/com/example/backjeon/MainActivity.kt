@@ -1,4 +1,3 @@
-// src/main/java/com/backjeon/MainActivity.kt
 package com.example.backjeon
 
 import android.content.Intent
@@ -6,8 +5,6 @@ import android.os.*
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
-import com.example.backjeon.R
-import kotlin.jvm.java
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
@@ -21,13 +18,14 @@ class MainActivity : AppCompatActivity() {
 
         messageTextView = findViewById(R.id.matching_message)
 
-        val cardQuickMatch = findViewById<CardView>(R.id.card_quick_match)
+//        val cardQuickMatch = findViewById<CardView>(R.id.card_quick_match)
         val cardAI = findViewById<CardView>(R.id.card_ai)
         val cardFriends = findViewById<CardView>(R.id.card_friends)
+        val cardCommunity = findViewById<CardView>(R.id.card_community) // 커뮤니티 카드 연결
 
-        cardQuickMatch.setOnClickListener {
-            if (matchingGame.isEmpty()) handleQuickMatch()
-        }
+//        cardQuickMatch.setOnClickListener {
+//            if (matchingGame.isEmpty()) handleQuickMatch()
+//        }
 
         cardAI.setOnClickListener {
             if (matchingGame.isEmpty()) handleAIMatch()
@@ -38,6 +36,11 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "Starting Play with Friends", Toast.LENGTH_SHORT).show()
                 // TODO: 친구 초대 페이지 연결 예정
             }
+        }
+
+        cardCommunity.setOnClickListener {
+            val intent = Intent(this, PostActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -62,4 +65,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }, 2000)
     }
+
+
 }
