@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -48,11 +49,18 @@ class PostActivity : AppCompatActivity() {
         )
     )
 
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PostAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 다크모드 설정 적용
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val savedDarkMode = prefs.getBoolean("isDarkMode", false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (savedDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_community)
 
@@ -70,7 +78,7 @@ class PostActivity : AppCompatActivity() {
                 putExtra("content", post.content)
                 putExtra("nickname", post.nickname)
                 putExtra("timestamp", post.timestamp)
-                putExtra("comments", ArrayList(post.comments)) // Parcelable Comment 필요
+                putExtra("comments", ArrayList(post.comments))
             }
             startActivity(intent)
         }
@@ -87,7 +95,7 @@ class PostActivity : AppCompatActivity() {
         if (requestCode == 1001 && resultCode == Activity.RESULT_OK && data != null) {
             val title = data.getStringExtra("title") ?: return
             val content = data.getStringExtra("content") ?: return
-            val nickname = "익명 사용자"
+            val nickname = "사용자1"
             val timestamp = getTodayDateString()
 
             val newPost = Post(title, content, nickname, timestamp)

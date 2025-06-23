@@ -3,8 +3,9 @@ package com.example.backjeon
 import android.os.Bundle
 import android.util.TypedValue
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import android.graphics.Color
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
 
 class PostDetailActivity : AppCompatActivity() {
@@ -19,6 +20,14 @@ class PostDetailActivity : AppCompatActivity() {
     private var comments: MutableList<Comment> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 다크모드 설정 적용 (super 이전)
+        val prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val savedDarkMode = prefs.getBoolean("isDarkMode", false)
+        AppCompatDelegate.setDefaultNightMode(
+            if (savedDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_detail)
 
@@ -63,24 +72,18 @@ class PostDetailActivity : AppCompatActivity() {
         if (comments.isEmpty()) {
             commentTextView.text = "댓글이 없습니다"
         } else {
-            commentTextView.text = "" // 댓글 안내 문구 제거
-
+            commentTextView.text = ""
             for (comment in comments) {
                 val commentView = TextView(this)
-
-                // 닉네임 bold + 시간 일반 텍스트 + 줄 바꿈 후 내용
                 val displayText = "<b>${comment.nickname}</b> (${comment.timestamp})<br>${comment.content}"
                 commentView.text = HtmlCompat.fromHtml(displayText, HtmlCompat.FROM_HTML_MODE_LEGACY)
-
-                commentView.setTextColor(Color.BLACK)
+                commentView.setTextColor(getColor(R.color.text_primary)) // 리소스 컬러 사용
                 commentView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
                 commentView.setPadding(0, 8, 0, 8)
-
                 commentSection.addView(commentView)
             }
         }
     }
-
 
     private fun getCurrentTime(): String {
         val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

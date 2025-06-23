@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- 사용자 정의 색상 -->
+    <color name="background">#F3F4F6</color>
+    <color name="text_primary">#000000</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="card_ai">#EF4444</color>
+    <color name="card_friends">#3B82F6</color>
+    <color name="card_community">#10B981</color>
+    <color name="message_text">#374151</color>
+    <color name="footer_text">#9CA3AF</color>
 </resources>

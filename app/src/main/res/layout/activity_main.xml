@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F3F4F6">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,7 +12,6 @@
         android:padding="24dp"
         android:gravity="center_horizontal">
 
-        <!-- Header -->
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
@@ -20,57 +19,23 @@
             android:text="백전노장"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#000000"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose your game mode and start playing!"
+            android:text="게임 모드를 선택하세요!"
             android:textSize="14sp"
-            android:textColor="#6B7280"
+            android:textColor="@color/text_secondary"
             android:layout_marginBottom="24dp" />
 
-        <!-- Quick Match Card -->
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:id="@+id/card_quick_match"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginBottom="16dp"-->
-<!--            app:cardBackgroundColor="#EF4444"-->
-<!--            android:clickable="true"-->
-<!--            app:cardCornerRadius="12dp"-->
-<!--            app:cardElevation="4dp">-->
-
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:padding="16dp"-->
-<!--                android:orientation="vertical">-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Quick Match"-->
-<!--                    android:textSize="18sp"-->
-<!--                    android:textColor="#FFFFFF" />-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Jump into a fast game."-->
-<!--                    android:textSize="14sp"-->
-<!--                    android:textColor="#FFFFFF" />-->
-<!--            </LinearLayout>-->
-<!--        </androidx.cardview.widget.CardView>-->
-
-        <!-- AI Match Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_ai"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#EF4444"
+            app:cardBackgroundColor="@color/card_ai"
             android:clickable="true"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp">
@@ -84,26 +49,25 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Play with AI"
-                    android:textColor="#FFFFFF"
+                    android:text="AI와 플레이"
+                    android:textColor="@color/white"
                     android:textSize="18sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Challenge an AI opponent."
-                    android:textColor="#FFFFFF"
+                    android:text="AI 상대에게 도전하세요."
+                    android:textColor="@color/white"
                     android:textSize="14sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Friends Match Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_friends"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#3B82F6"
+            app:cardBackgroundColor="@color/card_friends"
             android:clickable="true"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp">
@@ -117,26 +81,25 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Play with Friends"
+                    android:text="친구와 플레이"
                     android:textSize="18sp"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Invite your friends to play."
+                    android:text="친구를 초대해 함께 하세요."
                     android:textSize="14sp"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/white" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Community Card -->
         <androidx.cardview.widget.CardView
             android:id="@+id/card_community"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#10B981"
+            app:cardBackgroundColor="@color/card_community"
             android:clickable="true"
             app:cardCornerRadius="12dp"
             app:cardElevation="4dp">
@@ -152,18 +115,17 @@
                     android:layout_height="wrap_content"
                     android:text="커뮤니티"
                     android:textSize="18sp"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="유저들과 전략을 나눠보세요."
                     android:textSize="14sp"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/white" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Matching Message -->
         <TextView
             android:id="@+id/matching_message"
             android:layout_width="wrap_content"
@@ -171,16 +133,21 @@
             android:layout_marginTop="24dp"
             android:text=""
             android:textSize="16sp"
-            android:textColor="#374151" />
+            android:textColor="@color/message_text" />
 
-        <!-- Footer -->
+        <Button
+            android:id="@+id/themeToggleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="테마 변경"
+            android:layout_margin="16dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:text="© 2025 백전노장. All rights reserved."
-            android:textColor="#9CA3AF"
+            android:textColor="@color/footer_text"
             android:textSize="12sp" />
-
     </LinearLayout>
 </ScrollView>

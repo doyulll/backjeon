@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +16,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#111827"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="12dp" />
 
         <!-- 게시글 내용 -->
@@ -26,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            android:textColor="#333333"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="24dp" />
 
         <!-- 댓글 입력 -->
@@ -37,7 +36,9 @@
             android:hint="댓글을 입력하세요"
             android:layout_marginBottom="8dp"
             android:padding="10dp"
-            android:background="@android:drawable/edit_text" />
+            android:background="@android:drawable/edit_text"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_secondary" />
 
         <Button
             android:id="@+id/comment_submit"
@@ -52,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="댓글이 없습니다"
-            android:textColor="#555555"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
         <!-- 댓글 추가될 영역 -->
@@ -62,6 +63,5 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="8dp"/>
-
     </LinearLayout>
 </ScrollView>
