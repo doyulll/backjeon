@@ -149,6 +149,5 @@
             android:text="© 2025 백전노장. All rights reserved."
             android:textColor="@color/footer_text"
             android:textSize="12sp" />
-
     </LinearLayout>
 </ScrollView>

@@ -49,12 +49,11 @@ class PostActivity : AppCompatActivity() {
         )
     )
 
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: PostAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. 테마 적용 (super.onCreate() 이전에 반드시 호출)
+        // 다크모드 설정 적용
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
         val savedDarkMode = prefs.getBoolean("isDarkMode", false)
         AppCompatDelegate.setDefaultNightMode(
@@ -79,7 +78,7 @@ class PostActivity : AppCompatActivity() {
                 putExtra("content", post.content)
                 putExtra("nickname", post.nickname)
                 putExtra("timestamp", post.timestamp)
-                putExtra("comments", ArrayList(post.comments)) // Parcelable Comment 필요
+                putExtra("comments", ArrayList(post.comments))
             }
             startActivity(intent)
         }
@@ -90,7 +89,6 @@ class PostActivity : AppCompatActivity() {
             startActivityForResult(intent, 1001)
         }
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

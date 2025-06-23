@@ -14,11 +14,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var prefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 1. SharedPreferences 초기화
+        // SharedPreferences 초기화
         prefs = getSharedPreferences("settings", MODE_PRIVATE)
         val savedDarkMode = prefs.getBoolean("isDarkMode", false)
 
-        // 2. 테마 적용 (super.onCreate() 이전)
+        // 다크모드 적용
         AppCompatDelegate.setDefaultNightMode(
             if (savedDarkMode) AppCompatDelegate.MODE_NIGHT_YES
             else AppCompatDelegate.MODE_NIGHT_NO
@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         cardFriends.setOnClickListener {
             if (matchingGame.isEmpty()) {
                 Toast.makeText(this, "친구와 플레이를 시작합니다.", Toast.LENGTH_SHORT).show()
+                // TODO: 친구 초대 페이지 연결 예정
             }
         }
 
