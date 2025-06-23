@@ -18,9 +18,11 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:text="게시글 모아보기"
             android:padding="16dp"
             android:background="@color/white"
-            android:textColor="@color/text_primary" />
+            android:textColor="@color/black"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewPosts"

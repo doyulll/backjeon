@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -34,10 +35,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="댓글을 입력하세요"
+
             android:layout_marginBottom="8dp"
             android:padding="10dp"
             android:background="@android:drawable/edit_text"
-            android:textColor="@color/text_primary"
+            android:textColor="@color/black"
             android:textColorHint="@color/text_secondary" />
 
         <Button
@@ -47,7 +49,7 @@
             android:text="등록"
             android:layout_marginBottom="24dp" />
 
-        <!-- 댓글 목록 -->
+        <!-- 댓글 안내문구 -->
         <TextView
             android:id="@+id/text_comments"
             android:layout_width="match_parent"
@@ -62,6 +64,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </ScrollView>

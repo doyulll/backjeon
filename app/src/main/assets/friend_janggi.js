@@ -1,4 +1,4 @@
-// define
+// define 41줄 변경
 
 var ZW= {};
 
@@ -38,7 +38,7 @@ function JanggiStage(objName, stage_id, han_eatitems, cho_eatitems) {
   this.m_depth = 4;
   this.tern = Janggi.User;
   this.com_tern = 0;
-  this.is_single = true;
+  this.is_single = false;
   this.pos_divs = [];
   this.pos_junit_obj = null;
 
@@ -107,10 +107,10 @@ function JanggiStage(objName, stage_id, han_eatitems, cho_eatitems) {
 		alert(msg);
 		this.is_final = true;
 
-		  // 안드로이드로 결과 전송
-             if (window.AndroidBridge && window.AndroidBridge.onGameResult) {
-                 window.AndroidBridge.onGameResult(msg);
-             }
+        // 안드로이드로 결과 전송
+           if (window.AndroidBridge && window.AndroidBridge.onGameResult) {
+               window.AndroidBridge.onGameResult(msg);
+           }
 	}
 	this.doMinimax = function(stage, depth, cut_score) {
 		if(depth == this.m_depth) {
@@ -331,9 +331,9 @@ function JanggiStage(objName, stage_id, han_eatitems, cho_eatitems) {
 JanggiStage.prototype.getStageStatus = function () {
   const stage = Array.from(Array(9), () => Array(10).fill(null));
   for (let unit of this.units) {
-    const x = unit.junit_obj.axis_x;
-    const y = unit.junit_obj.axis_y;
-    stage[x][y] = unit;
+      const x = unit.junit_obj.axis_x;
+      const y = unit.junit_obj.axis_y;
+      stage[x][y] = unit;
   }
   return stage;
 };

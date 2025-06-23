@@ -1,8 +1,6 @@
 package com.example.backjeon
 
 import android.os.Bundle
-import android.util.Log
-import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -20,7 +18,10 @@ class AIGameActivity : AppCompatActivity() {
         webSettings.allowFileAccess = true
 
         webView.webViewClient = WebViewClient()
-        webView.loadUrl("file:///android_asset/ai_game.html")
 
+        // 브릿지 등록
+        webView.addJavascriptInterface(JsBridge(this), "AndroidBridge")
+
+        webView.loadUrl("file:///android_asset/ai_game.html")
     }
 }
