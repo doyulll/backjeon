@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-    <title>AI 장기</title>
+    <title>친구와 장기</title>
     <style>
         body {
        margin: 0;
@@ -37,13 +37,13 @@
        height: 800px;
        position: relative;
 
-       margin-left: 380px;
-       <!--       margin-left: 20px;-->
+/* margin-left: 180px */
+       margin-left: 40px;
      }
 
      #janggiBoard {
-     transform: translateX(-352.5px);
-<!--       transform: translateX(-195px);-->
+/* transform: translateX(-352.5px); */
+       transform: translateX(-180px);
      }
 
 
@@ -149,7 +149,7 @@
 
 </head>
 <body>
-<h1 style="color: red;">AI 대국</h1>
+<h1 style="color: red;">친구와 대국</h1>
 
 <select id="setup">
     <option value="마상마상">마상마상</option>
@@ -171,7 +171,7 @@
 </div>
 
 <script src="HMotion.js"></script>
-<script src="janggi.js"></script>
+<script src="friend_janggi.js"></script>
 <script>
     function drawJanggiBoard(canvasId, cellWidth, cellHeight) {
       const canvas = document.getElementById(canvasId);

@@ -1,34 +1,16 @@
 package com.example.backjeon
-
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.TypedValue
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.text.HtmlCompat
+import com.example.backjeon.Comment
+import com.example.backjeon.R
 import org.json.JSONArray
 
 class PostDetailActivity : AppCompatActivity() {
-
-    // Post 내부에 Comment 데이터 클래스 선언(별도 파일 필요 없음)
-    data class Comment(
-        val nickname: String,
-        val content: String,
-        val timestamp: String
-    ) {
-        fun toJson(): org.json.JSONObject = org.json.JSONObject().apply {
-            put("nickname", nickname)
-            put("content", content)
-            put("timestamp", timestamp)
-        }
-        companion object {
-            fun fromJson(obj: org.json.JSONObject): Comment = Comment(
-                nickname = obj.getString("nickname"),
-                content = obj.getString("content"),
-                timestamp = obj.getString("timestamp")
-            )
-        }
-    }
 
     private lateinit var titleTextView: TextView
     private lateinit var contentTextView: TextView
@@ -42,11 +24,13 @@ class PostDetailActivity : AppCompatActivity() {
     private lateinit var postKey: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // 1. SharedPreferences 준비
+        prefs = getSharedPreferences("comments_prefs", MODE_PRIVATE)
+
+        // 2. (다크모드 설정 등 생략, 기존 코드 유지)
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_detail)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "게시글 상세"
 
         titleTextView = findViewById(R.id.detail_title)
         contentTextView = findViewById(R.id.detail_content)
@@ -55,35 +39,44 @@ class PostDetailActivity : AppCompatActivity() {
         commentTextView = findViewById(R.id.text_comments)
         commentSection = findViewById(R.id.comment_section)
 
-        // 게시글 정보 받기
+        // 3. 게시글 정보 받기
         val title = intent.getStringExtra("title") ?: ""
         val content = intent.getStringExtra("content") ?: ""
         titleTextView.text = title
         contentTextView.text = content
 
-        // 게시글별 고유 키 생성 (제목+내용 해시)
+        // 4. 게시글별 고유 키 생성 (제목+내용 해시)
         postKey = "comments_${(title + content).hashCode()}"
-        prefs = getSharedPreferences("comments_prefs", MODE_PRIVATE)
 
-        // SharedPreferences에서 댓글 불러오기 (최초 진입 시 기본 3개)
+        // 5. SharedPreferences에서 댓글 불러오기
         comments = loadCommentsFromPrefs().toMutableList()
 
         updateComments()
 
-        addCommentButton.setOnClickListener {
-            val commentString = commentInput.text.toString().trim()
-            if (commentString.isNotBlank()) {
-                val newComment = Comment(
-                    nickname = "사용자1",
-                    content = commentString,
-                    timestamp = getCurrentTime()
-                )
-                comments.add(newComment)
-                commentInput.text.clear()
-                saveCommentsToPrefs()
-                updateComments()
-            }
-        }
+  private fun loadCommentsFromPrefs(): List<Comment> {
+      val jsonStr = prefs.getString(postKey, null)
+      return if (jsonStr == null) {
+          // 최초 진입: 기본 댓글 3개 추가
+          val defaultComments = listOf(
+              Comment("관리자", "환영합니다! 자유롭게 댓글을 남겨보세요.", getCurrentTime()),
+              Comment("홍길동", "첫 댓글입니다!", getCurrentTime()),
+              Comment("김철수", "좋은 정보 감사합니다.", getCurrentTime())
+          )
+          // SharedPreferences에 저장
+          comments = defaultComments.toMutableList()
+          saveCommentsToPrefs()
+          defaultComments
+      } else {
+          val jsonArr = JSONArray(jsonStr)
+          val list = mutableListOf<Comment>()
+          for (i in 0 until jsonArr.length()) {
+              val obj = jsonArr.getJSONObject(i)
+              list.add(Comment.fromJson(obj))
+          }
+          list
+      }
+  }
+
     }
 
     private fun updateComments() {
@@ -113,38 +106,20 @@ class PostDetailActivity : AppCompatActivity() {
         prefs.edit().putString(postKey, jsonArr.toString()).apply()
     }
 
-    // SharedPreferences에서 댓글 불러오기 (최초 진입 시 기본 3개)
+    // SharedPreferences에서 댓글 불러오기
     private fun loadCommentsFromPrefs(): List<Comment> {
-        val jsonStr = prefs.getString(postKey, null)
-        return if (jsonStr == null) {
-            // 최초 진입: 기본 댓글 3개 추가
-            val defaultComments = listOf(
-                Comment("관리자", "환영합니다! 자유롭게 댓글을 남겨보세요.", getCurrentTime()),
-                Comment("홍길동", "첫 댓글입니다!", getCurrentTime()),
-                Comment("김철수", "좋은 정보 감사합니다.", getCurrentTime())
-            )
-            comments = defaultComments.toMutableList()
-            saveCommentsToPrefs()
-            defaultComments
-        } else {
-            val jsonArr = JSONArray(jsonStr)
-            val list = mutableListOf<Comment>()
-            for (i in 0 until jsonArr.length()) {
-                val obj = jsonArr.getJSONObject(i)
-                list.add(Comment.fromJson(obj))
-            }
-            list
+        val jsonStr = prefs.getString(postKey, null) ?: return emptyList()
+        val jsonArr = JSONArray(jsonStr)
+        val list = mutableListOf<Comment>()
+        for (i in 0 until jsonArr.length()) {
+            val obj = jsonArr.getJSONObject(i)
+            list.add(Comment.fromJson(obj))
         }
+        return list
     }
 
     private fun getCurrentTime(): String {
         val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
         return sdf.format(java.util.Date())
-    }
-
-    // 상단 ←(뒤로가기) 버튼 동작
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        return true
     }
 }

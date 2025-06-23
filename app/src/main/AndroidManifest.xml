@@ -28,14 +28,20 @@
         <activity android:name="com.example.backjeon.AIGameActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
-        <!-- 커뮤니티 액티비티 추가 -->
+        <!-- 친구 게임 액티비티 -->
+        <activity android:name="com.example.backjeon.FriendGameActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!-- 커뮤니티 액티비티 -->
         <activity android:name="com.example.backjeon.PostActivity"
             android:theme="@style/Theme.AppCompat.Light" />
 
+        <!-- 글작성 액티비티 -->
         <activity
             android:name="com.example.backjeon.WritePostActivity"
             android:theme="@style/Theme.AppCompat.Light.DialogWhenLarge" />
 
+        <!-- 댓글작성 액티비티 -->
         <activity android:name="com.example.backjeon.PostDetailActivity"
             android:theme="@style/Theme.AppCompat.Light" />
 

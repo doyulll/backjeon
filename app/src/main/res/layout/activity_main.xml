@@ -22,13 +22,21 @@
             android:textColor="@color/text_primary"
             android:layout_marginBottom="4dp" />
 
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragment_quote"
+            android:name="com.example.backjeon.QuoteFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="게임 모드를 선택하세요!"
+            android:text="컨텐츠를 선택하세요."
             android:textSize="14sp"
             android:textColor="@color/text_secondary"
             android:layout_marginBottom="24dp" />
+
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_ai"
@@ -88,7 +96,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="친구를 초대해 함께 하세요."
+                    android:text="근처의 친구와 함께 하세요."
                     android:textSize="14sp"
                     android:textColor="@color/white" />
             </LinearLayout>
@@ -141,6 +149,22 @@
             android:layout_height="wrap_content"
             android:text="테마 변경"
             android:layout_margin="16dp" />
+
+        <ProgressBar
+            android:id="@+id/winRateProgress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="100"
+            android:progress="0"
+            style="?android:attr/progressBarStyleHorizontal" />
+
+        <TextView
+            android:id="@+id/winRateText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="승률: 0%"
+            android:textColor="@color/message_text"/>
+
 
         <TextView
             android:layout_width="wrap_content"
